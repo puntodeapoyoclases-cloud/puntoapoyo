@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Punto de Apoyo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #14b8a6;
+    --primary-dark: #0f766e;
+    --primary-light: #5eead4;
+    --primary-bg: #f0fdfa;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --text-soft: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --border: #e2e8f0;
+    --shadow: 0 10px 30px rgba(20, 184, 166, 0.12);
+    --shadow-soft: 0 4px 12px rgba(20, 184, 166, 0.08);
+    --rojo: #ef4444;
+    --naranja: #f97316;
+    --azul: #3b82f6;
+    --verde: #10b981;
+    --violeta: #a855f7;
+    --amarillo: #eab308;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 78px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+body.modo-oscuro {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --text-soft: #94a3b8;
+    --border: #334155;
+    --primary-bg: #134e4a;
+}
+body.modo-oscuro header {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+}
+body.modo-oscuro .card,
+body.modo-oscuro .alumno-card,
+body.modo-oscuro .ficha-card,
+body.modo-oscuro .modal,
+body.modo-oscuro .bottom-nav,
+body.modo-oscuro .asistencia-toolbar,
+body.modo-oscuro .asistencia-wrapper,
+body.modo-oscuro .search-box {
+    background: var(--card);
+    color: var(--text);
+}
+body.modo-oscuro .search-box,
+body.modo-oscuro .modal input,
+body.modo-oscuro .modal select,
+body.modo-oscuro .modal textarea {
+    background: #334155;
+    color: var(--text);
+    border-color: #475569;
+}
+body.modo-oscuro .alumnos li { background: #334155; }
+
+header {
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    color: white;
+    padding: 26px 20px 22px;
+    text-align: center;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 10px 30px rgba(20, 184, 166, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+header::before {
+    content: ''; position: absolute; top: -60%; right: -20%;
+    width: 260px; height: 260px; background: rgba(255,255,255,0.1); border-radius: 50%;
+}
+header::after {
+    content: ''; position: absolute; bottom: -60%; left: -10%;
+    width: 200px; height: 200px; background: rgba(255,255,255,0.08); border-radius: 50%;
+}
+.logo {
+    width: 72px; height: 72px; margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.18);
+    border-radius: 50%; position: relative; z-index: 1;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 2px solid rgba(255,255,255,0.3); overflow: hidden;
+}
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+.logo .emoji { font-size: 38px; line-height: 1; }
+header h1 {
+    margin: 0; font-size: 26px; font-weight: 900;
+    letter-spacing: -0.5px; position: relative; z-index: 1;
+}
+header p {
+    margin: 4px 0 0; font-size: 14px; opacity: 0.92;
+    font-weight: 600; position: relative; z-index: 1;
+}
+.header-top {
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2; margin-bottom: 4px;
+}
+.btn-modo {
+    background: rgba(255,255,255,0.2);
+    border: none; color: white; width: 40px; height: 40px;
+    border-radius: 50%; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-modo:active { transform: scale(0.9); }
+.espacio-modo { width: 40px; }
+
+main {
+    flex: 1; max-width: 900px; width: 100%;
+    margin: 0 auto; padding: 20px 16px;
+}
+.screen { display: none; animation: fadeIn 0.25s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.greeting { margin-bottom: 6px; font-size: 24px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+.fecha-hoy { font-size: 15px; color: var(--text-soft); font-weight: 700; margin-bottom: 20px; text-transform: capitalize; }
+
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+.card {
+    background: var(--card); border-radius: 20px; padding: 18px 16px;
+    box-shadow: var(--shadow); border: none; cursor: pointer;
+    text-align: left; font-family: inherit; transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+}
+.card:active { transform: scale(0.97); }
+.card-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+.card-label { font-size: 13px; color: var(--text-soft); font-weight: 700; margin-bottom: 4px; line-height: 1.2; }
+.card-value { font-size: 28px; font-weight: 900; color: var(--primary-dark); line-height: 1; }
+.card-value.alerta { color: var(--danger); }
+.card-value.exito { color: var(--success); }
+.card-accent { position: absolute; top: 0; left: 0; width: 5px; height: 100%; background: var(--primary); }
+.card.accent-warning .card-accent { background: var(--warning); }
+.card.accent-success .card-accent { background: var(--success); }
+.card.accent-danger .card-accent { background: var(--danger); }
+.card-ancho {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+    border-radius: 20px; padding: 16px 18px;
+    box-shadow: var(--shadow-soft); cursor: pointer;
+    border: none; font-family: inherit; text-align: left;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+}
+.card-ancho:active { transform: scale(0.98); }
+.card-ancho .icono-grande { font-size: 34px; }
+.card-ancho .info { flex: 1; min-width: 0; }
+.card-ancho .info h3 { margin: 0 0 2px; font-size: 15px; font-weight: 900; color: var(--primary-dark); }
+.card-ancho .info p { margin: 0; font-size: 13px; font-weight: 700; color: var(--text-soft); }
+body.modo-oscuro .card-ancho {
+    background: linear-gradient(135deg, #134e4a, #115e59);
+}
+
+.section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; gap: 10px;
+}
+.section-title { font-size: 22px; font-weight: 900; margin: 0; color: var(--text); }
+.section-sub { font-size: 13px; color: var(--text-soft); font-weight: 700; margin: 2px 0 0; }
+.btn-primary {
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; border: none; padding: 12px 18px; border-radius: 14px;
+    font-family: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3);
+    transition: all 0.2s ease; white-space: nowrap;
+}
+.btn-primary:active { transform: scale(0.96); }
+.btn-secondary {
+    background: var(--primary-bg); color: var(--primary-dark);
+    border: 2px solid var(--primary-light); padding: 10px 14px;
+    border-radius: 12px; font-family: inherit; font-weight: 800;
+    font-size: 13px; cursor: pointer; transition: all 0.2s ease;
+}
+.btn-secondary:active { transform: scale(0.96); }
+.search-box {
+    width: 100%; padding: 13px 16px; border-radius: 14px;
+    border: 2px solid var(--border); background: var(--card);
+    font-family: inherit; font-size: 15px; font-weight: 600;
+    color: var(--text); margin-bottom: 14px;
+    transition: all 0.2s ease;
+}
+.search-box:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+}
+.lista-alumnos { display: flex; flex-direction: column; gap: 10px; }
+.alumno-card {
+    background: var(--card); border-radius: 16px; padding: 14px 16px;
+    box-shadow: var(--shadow-soft); display: flex; justify-content: space-between;
+    align-items: center; gap: 12px; cursor: pointer;
+    transition: all 0.2s ease; border-left: 5px solid var(--primary);
+}
+.alumno-card:active { transform: scale(0.98); }
+.alumno-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.alumno-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; flex-shrink: 0;
+    overflow: hidden; border: 2px solid white; box-shadow: 0 2px 6px rgba(20,184,166,.3);
+}
+.alumno-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.alumno-texto { flex: 1; min-width: 0; }
+.alumno-nombre { font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alumno-detalle { font-size: 13px; color: var(--text-soft); font-weight: 600; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alumno-flecha { font-size: 20px; color: var(--text-soft); flex-shrink: 0; }
+
+.vacio-msg { text-align: center; padding: 40px 20px; color: var(--text-soft); }
+.vacio-msg .icon { font-size: 50px; display: block; margin-bottom: 12px; opacity: 0.6; }
+.vacio-msg p { margin: 0; font-weight: 700; font-size: 14px; line-height: 1.5; }
+
+.ficha-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.btn-volver {
+    background: var(--card); border: 2px solid var(--border);
+    padding: 9px 14px; border-radius: 12px;
+    font-family: inherit; font-weight: 800; font-size: 14px;
+    color: var(--text); cursor: pointer; display: flex;
+    align-items: center; gap: 6px;
+}
+.btn-volver:active { transform: scale(0.96); }
+
+.ficha-card {
+    background: var(--card); border-radius: 20px; padding: 20px;
+    box-shadow: var(--shadow); margin-bottom: 14px;
+}
+.ficha-cabecera { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.ficha-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 28px; flex-shrink: 0;
+    overflow: hidden; border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(20,184,166,.3);
+}
+.ficha-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ficha-cabecera .texto { flex: 1; min-width: 0; }
+.ficha-nombre { font-size: 22px; font-weight: 900; margin: 0 0 4px; color: var(--text); letter-spacing: -0.5px; word-break: break-word; }
+.ficha-sub { font-size: 14px; color: var(--text-soft); font-weight: 700; margin: 0; word-break: break-word; }
+
+.ficha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.ficha-item { background: var(--primary-bg); border-radius: 12px; padding: 11px 13px; }
+.ficha-item-label { font-size: 11px; color: var(--primary-dark); font-weight: 800; margin: 0 0 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+body.modo-oscuro .ficha-item-label { color: var(--primary-light); }
+.ficha-item-valor { font-size: 14px; font-weight: 800; color: var(--text); margin: 0; word-break: break-word; }
+
+.acciones-rapidas { display: flex; gap: 10px; margin-bottom: 14px; }
+.btn-accion {
+    flex: 1; padding: 14px; border-radius: 14px; border: none;
+    font-family: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-accion:active { transform: scale(0.97); }
+.btn-whatsapp { background: #25D366; color: white; box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3); }
+.btn-llamar { background: var(--primary); color: white; box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3); }
+
+.ficha-seccion-titulo {
+    font-size: 13px; font-weight: 900; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px;
+}
+.ficha-notas {
+    background: #fefce8; border-left: 4px solid #facc15;
+    padding: 12px 14px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; color: #422006; white-space: pre-wrap;
+    margin-top: 8px; min-height: 20px;
+}
+body.modo-oscuro .ficha-notas { background: #422006; color: #fef3c7; }
+
+.ficha-botones-bottom { display: flex; gap: 10px; margin-top: 14px; }
+.btn-editar, .btn-eliminar {
+    flex: 1; padding: 13px; border-radius: 12px; border: none;
+    font-family: inherit; font-weight: 800; font-size: 14px; cursor: pointer;
+}
+.btn-editar { background: var(--primary-bg); color: var(--primary-dark); border: 2px solid var(--primary-light); }
+.btn-eliminar { background: #fef2f2; color: var(--danger); border: 2px solid #fecaca; }
+body.modo-oscuro .btn-eliminar { background: #450a0a; border-color: #7f1d1d; }
+
+/* ASISTENCIA */
+.asistencia-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; background: var(--card); border-radius: 14px;
+    padding: 10px 12px; box-shadow: var(--shadow-soft);
+}
+.asistencia-toolbar button {
+    background: var(--primary-bg); border: none; color: var(--primary-dark);
+    font-size: 18px; font-weight: 900; width: 40px; height: 40px;
+    border-radius: 12px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+.asistencia-toolbar button:active { transform: scale(0.94); }
+#mesActual { font-size: 16px; font-weight: 900; color: var(--text); letter-spacing: -0.3px; text-align: center; flex: 1; }
+
+.asistencia-wrapper {
+    overflow: auto; max-height: 72vh;
+    border-radius: 16px; background: var(--card);
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
+}
+.asistencia-tabla { border-collapse: separate; border-spacing: 0; font-size: 13px; white-space: nowrap; }
+.asistencia-tabla th, .asistencia-tabla td {
+    width: 38px; min-width: 38px; height: 42px;
+    text-align: center; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0; font-weight: 700;
+    user-select: none; -webkit-user-select: none;
+}
+.asistencia-tabla thead th {
+    background: #e6fffa; color: var(--primary-dark);
+    font-weight: 900; font-size: 12px;
+    position: sticky; top: 0; z-index: 2;
+}
+body.modo-oscuro .asistencia-tabla thead th { background: #134e4a; color: #5eead4; }
+.asistencia-tabla td {
+    background: var(--card); cursor: pointer;
+    transition: background 0.1s ease;
+    color: var(--primary-dark); font-size: 17px; font-weight: 900;
+}
+.asistencia-tabla td:active { background: var(--primary-bg); }
+.asistencia-tabla td.marcado {
+    background: linear-gradient(135deg, #14b8a6, #0d9488); color: white;
+}
+.sticky-nombre {
+    position: sticky; left: 0; z-index: 1;
+    width: auto !important; min-width: 130px !important;
+    max-width: 130px; text-align: left !important;
+    padding: 0 10px !important; font-weight: 800;
+    font-size: 12px; color: var(--text);
+    background: var(--card); overflow: hidden;
+    text-overflow: ellipsis;
+}
+.asistencia-tabla thead .sticky-nombre { background: #e6fffa; z-index: 4; color: var(--primary-dark); }
+body.modo-oscuro .asistencia-tabla thead .sticky-nombre { background: #134e4a; color: #5eead4; }
+.asistencia-tabla td.dia-cerrado { background: #f1f5f9; }
+body.modo-oscuro .asistencia-tabla td.dia-cerrado { background: #334155; }
+.asistencia-tabla td.dia-cerrado.marcado { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; }
+.asistencia-tabla thead th.dia-cerrado { background: #e2e8f0; color: #94a3b8; }
+body.modo-oscuro .asistencia-tabla thead th.dia-cerrado { background: #334155; color: #64748b; }
+.asistencia-tabla thead th.dia-hoy { background: #fcd34d; color: #78350f; font-size: 13px; }
+.asistencia-ayuda { font-size: 12px; color: var(--text-soft); font-weight: 700; text-align: center; margin-top: 10px; line-height: 1.5; }
+
+/* TAREAS */
+.tareas-filtros { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+.filtro-tarea {
+    padding: 8px 14px; border-radius: 20px; border: 2px solid var(--border);
+    background: var(--card); color: var(--text-soft); font-family: inherit;
+    font-weight: 800; font-size: 13px; cursor: pointer;
+    white-space: nowrap; transition: all 0.2s ease;
+}
+.filtro-tarea.active { background: var(--primary); color: white; border-color: var(--primary); }
+.tarea-card {
+    background: var(--card); border-radius: 16px; padding: 14px 16px;
+    box-shadow: var(--shadow-soft); margin-bottom: 10px;
+    border-left: 6px solid var(--primary); cursor: pointer;
+    transition: all 0.2s ease;
+}
+.tarea-card:active { transform: scale(0.98); }
+.tarea-card.estado-rojo { border-left-color: var(--rojo); }
+.tarea-card.estado-naranja { border-left-color: var(--naranja); }
+.tarea-card.estado-azul { border-left-color: var(--azul); }
+.tarea-card.estado-verde { border-left-color: var(--verde); }
+.tarea-card.estado-verde .tarea-titulo { text-decoration: line-through; opacity: 0.7; }
+.tarea-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.tarea-titulo { font-size: 15px; font-weight: 900; color: var(--text); margin: 0; flex: 1; }
+.tarea-estado-punto {
+    width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-top: 3px;
+}
+.punto-rojo { background: var(--rojo); }
+.punto-naranja { background: var(--naranja); }
+.punto-azul { background: var(--azul); }
+.punto-verde { background: var(--verde); }
+.tarea-info { font-size: 13px; color: var(--text-soft); font-weight: 600; margin: 2px 0; }
+.tarea-info strong { color: var(--text); font-weight: 800; }
+.tarea-fechas { font-size: 12px; color: var(--text-soft); font-weight: 700; margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* COBROS */
+.cobros-resumen { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.cobro-mini {
+    background: var(--card); border-radius: 16px; padding: 14px 16px;
+    box-shadow: var(--shadow-soft); text-align: center;
+}
+.cobro-mini .label { font-size: 12px; color: var(--text-soft); font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 4px; }
+.cobro-mini .valor { font-size: 22px; font-weight: 900; margin: 0; color: var(--text); }
+.cobro-mini .valor.verde { color: var(--success); }
+.cobro-mini .valor.rojo { color: var(--danger); }
+
+.cobro-card {
+    background: var(--card); border-radius: 16px; padding: 14px 16px;
+    box-shadow: var(--shadow-soft); margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; border-left: 5px solid var(--success); cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cobro-card:active { transform: scale(0.98); }
+.cobro-card.pendiente { border-left-color: var(--danger); }
+.cobro-card.parcial { border-left-color: var(--warning); }
+.cobro-card .info { flex: 1; min-width: 0; }
+.cobro-card .nombre { font-size: 15px; font-weight: 800; color: var(--text); margin: 0 0 3px; }
+.cobro-card .detalle { font-size: 13px; color: var(--text-soft); font-weight: 600; margin: 0; }
+.cobro-card .estado { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px; }
+.cobro-card .estado.pagado { color: var(--success); }
+.cobro-card .estado.pendiente-txt { color: var(--danger); }
+.cobro-card .estado.parcial-txt { color: var(--warning); }
+
+/* CALENDARIO */
+.calendario-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; background: var(--card); border-radius: 16px;
+    padding: 12px; box-shadow: var(--shadow-soft); margin-bottom: 16px;
+}
+.cal-dia-semana {
+    text-align: center; font-size: 11px; font-weight: 900;
+    color: var(--text-soft); padding: 6px 0; text-transform: uppercase;
+}
+.cal-dia {
+    aspect-ratio: 1; border-radius: 10px; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; font-weight: 800; font-size: 14px;
+    background: var(--bg); color: var(--text);
+    border: 2px solid transparent; transition: all 0.15s ease;
+    position: relative; padding: 2px;
+}
+.cal-dia.vacio { background: transparent; cursor: default; }
+.cal-dia.hoy { border-color: var(--primary); background: var(--primary-bg); color: var(--primary-dark); }
+.cal-dia.otro-mes { opacity: 0.35; }
+.cal-dia:active:not(.vacio) { transform: scale(0.92); }
+.cal-dia .numero { line-height: 1; }
+.cal-puntos { display: flex; gap: 2px; margin-top: 2px; }
+.cal-punto { width: 5px; height: 5px; border-radius: 50%; }
+.punto-examen { background: var(--rojo); }
+.punto-trabajo { background: var(--violeta); }
+.punto-evento { background: var(--azul); }
+.punto-festivo { background: var(--verde); }
+.punto-recordatorio { background: var(--amarillo); }
+
+.evento-card {
+    background: var(--card); border-radius: 14px; padding: 12px 14px;
+    box-shadow: var(--shadow-soft); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+    border-left: 5px solid var(--primary);
+}
+.evento-card.tipo-examen { border-left-color: var(--rojo); }
+.evento-card.tipo-trabajo { border-left-color: var(--violeta); }
+.evento-card.tipo-evento { border-left-color: var(--azul); }
+.evento-card.tipo-festivo { border-left-color: var(--verde); }
+.evento-card.tipo-recordatorio { border-left-color: var(--amarillo); }
+.evento-card .fecha-bloque {
+    background: var(--primary-bg); border-radius: 10px; padding: 6px 10px;
+    text-align: center; min-width: 52px;
+}
+.evento-card .fecha-bloque .dia { font-size: 18px; font-weight: 900; color: var(--primary-dark); line-height: 1; }
+.evento-card .fecha-bloque .mes { font-size: 10px; font-weight: 800; color: var(--primary-dark); text-transform: uppercase; }
+.evento-card .info { flex: 1; min-width: 0; }
+.evento-card .titulo { font-size: 14px; font-weight: 900; color: var(--text); margin: 0 0 3px; }
+.evento-card .detalle { font-size: 12px; color: var(--text-soft); font-weight: 600; margin: 0; }
+
+/* INFORMES */
+.informe-card {
+    background: var(--card); border-radius: 16px; padding: 18px;
+    box-shadow: var(--shadow-soft); margin-bottom: 14px;
+}
+.informe-card h3 {
+    margin: 0 0 12px; font-size: 16px; font-weight: 900; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+}
+.informe-barra {
+    height: 10px; background: var(--border); border-radius: 5px;
+    overflow: hidden; margin: 6px 0;
+}
+.informe-barra-fill {
+    height: 100%; background: linear-gradient(90deg, #14b8a6, #0d9488);
+    border-radius: 5px; transition: width 0.5s ease;
+}
+.informe-fila {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px; font-weight: 700;
+}
+.informe-fila:last-child { border-bottom: none; }
+.informe-fila .n { color: var(--text-soft); }
+.informe-fila .v { color: var(--text); font-weight: 900; }
+
+/* CIERRE */
+.cierre-paso {
+    background: var(--card); border-radius: 16px; padding: 16px;
+    box-shadow: var(--shadow-soft); margin-bottom: 12px;
+    border-left: 5px solid var(--primary);
+}
+.cierre-paso h3 {
+    margin: 0 0 10px; font-size: 15px; font-weight: 900; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+}
+.cierre-paso .paso-num {
+    background: var(--primary); color: white; width: 24px; height: 24px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; flex-shrink: 0;
+}
+.cierre-lista { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.cierre-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    background: var(--bg); border-radius: 10px; font-size: 13px; font-weight: 700;
+}
+.cierre-item input[type="checkbox"] {
+    width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;
+}
+.btn-cerrar-dia {
+    width: 100%; padding: 18px; border-radius: 16px; border: none;
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; font-family: inherit; font-weight: 900; font-size: 17px;
+    cursor: pointer; box-shadow: 0 8px 20px rgba(20, 184, 166, 0.35);
+    margin-top: 8px; transition: all 0.2s ease;
+}
+.btn-cerrar-dia:active { transform: scale(0.97); }
+.btn-cerrar-dia.forzado {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+}
+
+/* MODALES */
+.modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    align-items: flex-start; justify-content: center;
+    padding: 20px 14px; z-index: 100;
+    animation: fadeIn 0.2s ease; overflow-y: auto;
+}
+.modal-bg.show { display: flex; }
+.modal {
+    background: var(--card); width: 100%; max-width: 500px;
+    border-radius: 24px; padding: 24px;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    margin: 20px auto;
+}
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal h2 { margin: 0 0 20px; font-size: 22px; font-weight: 900; color: var(--text); }
+.modal label { display: block; font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.modal input, .modal select, .modal textarea {
+    width: 100%; padding: 12px 14px; margin-bottom: 14px;
+    border: 2px solid var(--border); border-radius: 12px;
+    font-size: 15px; font-family: inherit; font-weight: 600;
+    color: var(--text); background: var(--bg); transition: all 0.2s ease;
+}
+.modal textarea { resize: vertical; min-height: 70px; }
+.modal input:focus, .modal select:focus, .modal textarea:focus {
+    outline: none; border-color: var(--primary);
+    background: var(--card); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+}
+.modal-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-buttons { display: flex; gap: 10px; margin-top: 8px; }
+.modal-buttons button {
+    flex: 1; padding: 14px; border-radius: 12px; border: none;
+    cursor: pointer; font-weight: 800; font-size: 15px; font-family: inherit;
+    transition: all 0.2s ease;
+}
+.modal-buttons button:active { transform: scale(0.97); }
+.btn-cancelar { background: #f3f4f6; color: var(--text); }
+body.modo-oscuro .btn-cancelar { background: #475569; color: white; }
+.btn-guardar {
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3);
+}
+.foto-selector { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.foto-preview {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 22px; flex-shrink: 0;
+    overflow: hidden; border: 3px solid var(--primary-light);
+}
+.foto-preview img { width: 100%; height: 100%; object-fit: cover; }
+.foto-botones { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.foto-botones button {
+    padding: 8px 12px; border-radius: 10px; border: 2px solid var(--border);
+    background: var(--card); color: var(--text); font-family: inherit;
+    font-weight: 800; font-size: 12px; cursor: pointer;
+}
+.foto-botones button:active { transform: scale(0.97); }
+
+.placeholder { text-align: center; padding: 60px 20px; color: var(--text-soft); }
+.placeholder .big-icon { font-size: 64px; margin-bottom: 16px; display: block; opacity: 0.6; }
+.placeholder h2 { margin: 0 0 8px; font-size: 22px; font-weight: 900; color: var(--text); }
+.placeholder p { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.5; }
+
+
+/* BARRA INFERIOR */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 8px 4px 10px;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06);
+    z-index: 50; padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+.nav-btn {
+    background: none; border: none; padding: 6px 2px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer; color: var(--text-soft); font-family: inherit;
+    transition: all 0.2s ease; flex: 1; min-width: 0;
+}
+.nav-btn .icon { font-size: 20px; line-height: 1; transition: transform 0.2s ease; }
+.nav-btn .label { font-size: 9px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.nav-btn.active { color: var(--primary-dark); }
+body.modo-oscuro .nav-btn.active { color: var(--primary-light); }
+.nav-btn.active .icon { transform: scale(1.15); }
+.nav-btn.active .label { color: var(--primary-dark); }
+body.modo-oscuro .nav-btn.active .label { color: var(--primary-light); }
+
+@media (max-width: 360px) {
+    .nav-btn .label { font-size: 8px; }
+    .nav-btn .icon { font-size: 18px; }
+    .ficha-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <div class="espacio-modo"></div>
+        <button class="btn-modo" onclick="toggleModoOscuro()" id="btnModo" title="Modo oscuro">🌙</button>
+    </div>
+    <div class="logo">
+        <img src="logo.png" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="emoji" style="display:none;">✨</span>
+    </div>
+    <h1>Punto de Apoyo</h1>
+    <p>Aprender, avanzar y volar</p>
+</header>
+
+<main>
+
+    <!-- ============ INICIO ============ -->
+    <section id="screen-inicio" class="screen active">
+        <div class="greeting" id="greeting">Buenos días, Cristina</div>
+        <div class="fecha-hoy" id="fechaHoy">Lunes, 1 de enero</div>
+
+        <div class="cards">
+            <button class="card" onclick="irA('alumnos')">
+                <span class="card-accent"></span>
+                <span class="card-icon">👦</span>
+                <div class="card-label">Total alumnos</div>
+                <div class="card-value" id="cardAlumnos">0</div>
+            </button>
+            <button class="card accent-warning" onclick="irA('tareas')">
+                <span class="card-accent"></span>
+                <span class="card-icon">📚</span>
+                <div class="card-label">Tareas pendientes</div>
+                <div class="card-value" id="cardTareas">0</div>
+            </button>
+            <button class="card accent-danger" onclick="irA('cobros')">
+                <span class="card-accent"></span>
+                <span class="card-icon">💰</span>
+                <div class="card-label">Pendientes de pago</div>
+                <div class="card-value alerta" id="cardCobros">0</div>
+            </button>
+            <button class="card accent-success" onclick="irA('asistencia')">
+                <span class="card-accent"></span>
+                <span class="card-icon">✅</span>
+                <div class="card-label">Asistencias hoy</div>
+                <div class="card-value exito" id="cardAsistenciasHoy">0</div>
+            </button>
+        </div>
+
+        <button class="card-ancho" onclick="irA('calendario')">
+            <span class="icono-grande">📅</span>
+            <div class="info">
+                <h3>Próximos eventos</h3>
+                <p id="proximosEventos">Sin eventos próximos</p>
+            </div>
+        </button>
+    </section>
+
+    <!-- ============ ALUMNOS ============ -->
+    <section id="screen-alumnos" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Alumnos</h2>
+                <p class="section-sub" id="contadorAlumnos">0 alumnos</p>
+            </div>
+            <button class="btn-primary" onclick="abrirFormularioAlumno()">+ Añadir</button>
+        </div>
+        <input type="text" class="search-box" id="buscador" placeholder="🔍 Buscar alumno..." oninput="renderizarAlumnos()">
+        <div class="lista-alumnos" id="listaAlumnos"></div>
+    </section>
+
+    <!-- ============ FICHA DE ALUMNO ============ -->
+  <section id="screen-ficha" class="screen">
+        <div class="ficha-top">
+            <button class="btn-volver" onclick="irA('alumnos')">← Volver</button>
+        </div>
+        <div id="contenidoFicha"></div>
+    </section>
+
+    <!-- ============ ASISTENCIA ============ -->
+    <section id="screen-asistencia" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Asistencia</h2>
+                <p class="section-sub">Toca la casilla para marcar</p>
+            </div>
+        </div>
+
+        <div class="asistencia-toolbar">
+            <button onclick="cambiarMes(-1)">◀</button>
+            <div id="mesActual">—</div>
+            <button onclick="cambiarMes(1)">▶</button>
+        </div>
+
+        <div class="asistencia-wrapper">
+            <table class="asistencia-tabla">
+                <thead id="asistenciaHead"></thead>
+                <tbody id="asistenciaBody"></tbody>
+            </table>
+        </div>
+
+        <p class="asistencia-ayuda">Un tic ✅ = el alumno ha asistido.<br>Viernes, sábados y domingos en gris (clases cerradas). El día de hoy en amarillo.</p>
+    </section>
+    <!-- ============ TAREAS ============ -->
+    <section id="screen-tareas" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Tareas</h2>
+                <p class="section-sub" id="contadorTareas">0 tareas</p>
+            </div>
+            <button class="btn-primary" onclick="abrirFormularioTarea()">+ Añadir</button>
+        </div>
+
+        <div class="tareas-filtros">
+            <button class="filtro-tarea active" data-filtro="todos" onclick="filtrarTareas('todos', this)">Todas</button>
+            <button class="filtro-tarea" data-filtro="rojo" onclick="filtrarTareas('rojo', this)">🔴 Sin empezar</button>
+            <button class="filtro-tarea" data-filtro="naranja" onclick="filtrarTareas('naranja', this)">🟠 Dictado</button>
+            <button class="filtro-tarea" data-filtro="azul" onclick="filtrarTareas('azul', this)">🔵 Maquetar</button>
+            <button class="filtro-tarea" data-filtro="verde" onclick="filtrarTareas('verde', this)">✅ Hecho</button>
+        </div>
+
+        <div id="listaTareas"></div>
+    </section>
+
+    <!-- ============ CALENDARIO ============ -->
+    <section id="screen-calendario" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Calendario</h2>
+                <p class="section-sub">Exámenes, trabajos y eventos</p>
+            </div>
+            <button class="btn-primary" onclick="abrirFormularioEvento()">+ Añadir</button>
+        </div>
+
+        <div class="asistencia-toolbar">
+            <button onclick="cambiarMesCal(-1)">◀</button>
+            <div id="mesActualCal">—</div>
+            <button onclick="cambiarMesCal(1)">▶</button>
+        </div>
+
+        <div class="calendario-grid" id="calendarioGrid"></div>
+
+        <div class="ficha-seccion-titulo" style="margin-top: 8px;">Eventos de este mes</div>
+        <div id="listaEventosMes"></div>
+    </section>
+
+    <!-- ============ COBROS ============ -->
+    <section id="screen-cobros" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Cobros</h2>
+                <p class="section-sub">Cobrado y pendiente de pago</p>
+            </div>
+        </div>
+
+        <div class="asistencia-toolbar">
+            <button onclick="cambiarMesCobros(-1)">◀</button>
+            <div id="mesActualCobros">—</div>
+            <button onclick="cambiarMesCobros(1)">▶</button>
+        </div>
+
+        <div class="cobros-resumen">
+            <div class="cobro-mini">
+                <p class="label">✅ Cobrado</p>
+                <p class="valor verde" id="cobroTotalCobrado">0 €</p>
+            </div>
+            <div class="cobro-mini">
+                <p class="label">⏳ Pendiente</p>
+                <p class="valor rojo" id="cobroTotalPendiente">0 €</p>
+            </div>
+        </div>
+
+        <div class="tareas-filtros">
+            <button class="filtro-tarea active" data-filtro-cobros="todos" onclick="filtrarCobros('todos', this)">Todos</button>
+            <button class="filtro-tarea" data-filtro-cobros="pagados" onclick="filtrarCobros('pagados', this)">✅ Cobrados</button>
+            <button class="filtro-tarea" data-filtro-cobros="pendientes" onclick="filtrarCobros('pendientes', this)">⏳ Pendientes</button>
+        </div>
+
+        <div id="listaCobros"></div>
+    </section>
+
+    <!-- ============ CIERRE ============ -->
+    <section id="screen-cierre" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Cierre del día</h2>
+                <p class="section-sub" id="fechaCierre">—</p>
+            </div>
+        </div>
+
+        <div class="cierre-paso">
+            <h3><span class="paso-num">1</span> Pasar lista de hoy</h3>
+            <div class="cierre-lista" id="cierreLista"></div>
+        </div>
+
+        <div class="cierre-paso">
+            <h3><span class="paso-num">2</span> Tareas para mañana</h3>
+            <div class="cierre-lista" id="cierreTareas"></div>
+        </div>
+
+        <div class="cierre-paso">
+            <h3><span class="paso-num">3</span> Cobros del día</h3>
+            <div class="cierre-lista" id="cierreCobros"></div>
+        </div>
+
+        <button class="btn-cerrar-dia" id="btnCerrarDia" onclick="cerrarDia()">🔒 CERRAR EL DÍA</button>
+        <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="forzarCierre()">Forzar cierre sin revisar todo</button>
+
+        <div class="ficha-seccion-titulo" style="margin-top: 24px;">Historial de cierres</div>
+        <div id="historialCierres"></div>
+    </section>
+
+    <!-- ============ INFORMES ============ -->
+    <section id="screen-informes" class="screen">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Informes</h2>
+                <p class="section-sub">Resumen general</p>
+            </div>
+        </div>
+
+        <div class="informe-card">
+            <h3>💰 Ingresos del mes</h3>
+            <div class="informe-fila">
+                <span class="n">Esperado</span>
+                <span class="v" id="informeEsperado">0 €</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">Cobrado</span>
+                <span class="v" id="informeCobrado">0 €</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">Pendiente</span>
+                <span class="v" id="informePendiente">0 €</span>
+            </div>
+            <div class="informe-barra">
+                <div class="informe-barra-fill" id="informeBarra" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <div class="informe-card">
+            <h3>👦 Alumnado</h3>
+            <div class="informe-fila">
+                <span class="n">Total alumnos</span>
+                <span class="v" id="informeTotalAlumnos">0</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">Tarifa plana (60 €)</span>
+                <span class="v" id="informeTarifa60">0</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">2 días/semana (35 €)</span>
+                <span class="v" id="informeTarifa35">0</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">Infantil (38 €)</span>
+                <span class="v" id="informeTarifa38">0</span>
+            </div>
+        </div>
+
+        <div class="informe-card">
+            <h3>✅ Asistencia</h3>
+            <div class="informe-fila">
+                <span class="n">Asistencia media</span>
+                <span class="v" id="informeAsistenciaMedia">—</span>
+            </div>
+            <div class="informe-fila">
+                <span class="n">Alumnos con más faltas</span>
+                <span class="v" id="informeMasFaltas">—</span>
+            </div>
+        </div>
+
+        <div class="informe-card">
+            <h3>📊 Notas medias por alumno</h3>
+            <div id="informeNotas"></div>
+        </div>
+
+        <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 15px; margin-top: 8px;" onclick="exportarInformePDF()">📄 Exportar informe a PDF</button>
+    </section>
+
+</main>
+<div class="modal-bg" id="modalAlumno">
+    <div class="modal">
+        <h2 id="modalTituloAlumno">➕ Añadir alumno</h2>
+
+        <div class="foto-selector">
+            <div class="foto-preview" id="fotoPreview">👤</div>
+            <div class="foto-botones">
+                <button type="button" onclick="document.getElementById('inputFotoGaleria').click()">🖼️ Galería</button>
+                <button type="button" onclick="document.getElementById('inputFotoCamara').click()">📷 Cámara</button>
+                <button type="button" onclick="quitarFoto()">🗑 Quitar foto</button>
+            </div>
+            <input type="file" id="inputFotoGaleria" accept="image/*" style="display:none;" onchange="procesarFoto(event)">
+            <input type="file" id="inputFotoCamara" accept="image/*" capture="user" style="display:none;" onchange="procesarFoto(event)">
+        </div>
+
+        <label>Nombre completo *</label>
+        <input type="text" id="fNombre" placeholder="Ej: María García López">
+
+        <div class="modal-fila">
+            <div>
+                <label>Curso</label>
+                <input type="text" id="fCurso" placeholder="Ej: 4º Primaria">
+            </div>
+            <div>
+                <label>Etapa</label>
+                <select id="fEtapa">
+                    <option value="">—</option>
+                    <option>Infantil</option>
+                    <option>Primaria</option>
+                    <option>ESO</option>
+                    <option>Bachillerato</option>
+                    <option>FP</option>
+                    </select>
+            </div>
+        </div>
+
+        <label>Colegio</label>
+        <input type="text" id="fColegio" placeholder="Ej: CEIP San Juan">
+
+        <label>Madre / Padre / Tutor</label>
+        <input type="text" id="fTutor" placeholder="Ej: Ana López">
+
+        <label>Teléfono (con prefijo, ej: 34600123456)</label>
+        <input type="tel" id="fTelefono" placeholder="Ej: 34600123456">
+
+        <label>Email</label>
+        <input type="email" id="fEmail" placeholder="Ej: ana@email.com">
+
+        <label>Turno</label>
+        <select id="fTurno">
+            <option value="">— Sin asignar —</option>
+            <option value="1">15:00–16:30</option>
+            <option value="2">16:30–18:00</option>
+            <option value="3">18:00–19:30</option>
+            <option value="4">19:30–21:00</option>
+        </select>
+
+        <label>Tarifa</label>
+        <select id="fTarifa">
+            <option value="">— Selecciona tarifa —</option>
+            <option value="60">60 € · Tarifa plana (incluye guardias)</option>
+            <option value="35">35 € · 2 días / semana</option>
+            <option value="38">38 € · Infantil (4 días, 45 min)</option>
+        </select>
+
+        <label>Notas</label>
+        <textarea id="fNotas" placeholder="Observaciones, alergias, comentarios..."></textarea>
+
+        <div class="modal-buttons">
+            <button class="btn-cancelar" onclick="cerrarModal('modalAlumno')">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarAlumnoDesdeForm()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modalTarea">
+    <div class="modal">
+        <h2 id="modalTituloTarea">➕ Añadir tarea</h2>
+
+        <label>Título / Descripción *</label>
+        <input type="text" id="tTitulo" placeholder="Ej: Ficha de fracciones">
+
+        <label>Asignatura</label>
+        <input type="text" id="tAsignatura" placeholder="Ej: Matemáticas">
+
+        <label>Alumnos (uno o varios) *</label>
+        <input type="text" class="search-box" id="tBuscadorAlumno" placeholder="🔍 Buscar alumno..." oninput="renderizarSelectorAlumnosTarea()">
+        <div id="tAlumnosSeleccionados" style="margin-bottom: 10px;"></div>
+        <div class="cierre-lista" id="tListaAlumnos" style="max-height: 200px; margin-bottom: 14px;"></div>
+
+        <div class="modal-fila">
+            <div>
+                <label>Fecha límite</label>
+                <input type="date" id="tFechaLimite">
+            </div>
+            <div>
+                <label>Estado</label>
+                <select id="tEstado">
+                    <option value="rojo">🔴 Sin empezar</option>
+                    <option value="naranja">🟠 Dictado</option>
+                    <option value="azul">🔵 Maquetar</option>
+                    <option value="verde">✅ Hecho</option>
+                </select>
+            </div>
+        </div>
+
+        <label>Asignada a</label>
+        <select id="tAsignada">
+            <option value="cristina">👑 Cristina</option>
+            <option value="lola">👑 Lola</option>
+            <option value="ambas">👑 Ambas</option>
+        </select>
+
+        <label>Notas</label>
+        <textarea id="tNotas" placeholder="Observaciones..."></textarea>
+
+        <div class="modal-buttons">
+            <button class="btn-cancelar" onclick="cerrarModal('modalTarea')">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarTareaDesdeForm()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modalEvento">
+    <div class="modal">
+        <h2 id="modalTituloEvento">➕ Añadir evento</h2>
+
+        <label>Tipo</label>
+        <select id="eTipo" onchange="actualizarColorEvento()">
+            <option value="examen">🔴 Examen</option>
+            <option value="trabajo">🟣 Trabajo / Entrega</option>
+            <option value="evento">🔵 Evento</option>
+            <option value="festivo">🟢 Festivo / Reunión</option>
+            <option value="recordatorio">🟡 Recordatorio</option>
+        </select>
+
+        <label>Título / Descripción *</label>
+        <input type="text" id="eTitulo" placeholder="Ej: Tema 3 – Fracciones">
+
+        <div class="modal-fila">
+            <div>
+                <label>Fecha</label>
+                <input type="date" id="eFecha">
+            </div>
+            <div>
+                <label>Asignatura</label>
+                <input type="text" id="eAsignatura" placeholder="Ej: Matemáticas">
+            </div>
+        </div>
+
+        <label>Alumnos (opcional, uno o varios)</label>
+        <input type="text" class="search-box" id="eBuscadorAlumno" placeholder="🔍 Buscar alumno..." oninput="renderizarSelectorAlumnosEvento()">
+        <div id="eAlumnosSeleccionados" style="margin-bottom: 10px;"></div>
+        <div class="cierre-lista" id="eListaAlumnos" style="max-height: 180px; margin-bottom: 14px;"></div>
+
+        <label>Avisar antes (días)</label>
+        <select id="eAviso">
+            <option value="0">Sin aviso</option>
+            <option value="1">1 día antes</option>
+            <option value="2" selected>2 días antes</option>
+            <option value="3">3 días antes</option>
+            <option value="7">1 semana antes</option>
+        </select>
+
+        <label>Notas</label>
+        <textarea id="eNotas" placeholder="Observaciones..."></textarea>
+
+        <div class="modal-buttons">
+            <button class="btn-cancelar" onclick="cerrarModal('modalEvento')">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarEventoDesdeForm()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-bg" id="modalNotas">
+    <div class="modal">
+        <h2 id="modalTituloNotas">📝 Añadir notas</h2>
+        <p style="font-size: 14px; color: var(--text-soft); font-weight: 700; margin: -10px 0 16px;" id="modalNotasSub"></p>
+        <div id="modalNotasContenido"></div>
+        <div class="modal-buttons">
+            <button class="btn-cancelar" onclick="cerrarModal('modalNotas')">Cancelar</button>
+            <button class="btn-guardar" onclick="guardarNotas()">Guardar notas</button>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <button class="nav-btn active" data-screen="inicio" onclick="irA('inicio')">
+        <span class="icon">🏠</span><span class="label">Inicio</span>
+    </button>
+    <button class="nav-btn" data-screen="alumnos" onclick="irA('alumnos')">
+        <span class="icon">👦</span><span class="label">Alumnos</span>
+    </button>
+    <button class="nav-btn" data-screen="asistencia" onclick="irA('asistencia')">
+        <span class="icon">✅</span><span class="label">Asistencia</span>
+    </button>
+    <button class="nav-btn" data-screen="tareas" onclick="irA('tareas')">
+        <span class="icon">📚</span><span class="label">Tareas</span>
+    </button>
+    <button class="nav-btn" data-screen="calendario" onclick="irA('calendario')">
+        <span class="icon">📅</span><span class="label">Calendario</span>
+    </button>
+    <button class="nav-btn" data-screen="cobros" onclick="irA('cobros')">
+        <span class="icon">💰</span><span class="label">Cobros</span>
+    </button>
+    <button class="nav-btn" data-screen="cierre" onclick="irA('cierre')">
+        <span class="icon">📋</span><span class="label">Cierre</span>
+    </button>
+</nav>
+
+<script>
+
+/* ==========================================================
+   ESTADO GLOBAL
+   ========================================================== */
+let alumnos = [];
+let asistencias = {};
+let tareas = [];
+let eventos = [];
+let cobros = {};      // { "2025-09": { idAlumno: {importe, pagado, fechaPago, metodo, parcial} } }
+let notas = [];       // { eventoId, alumnoId, nota }
+let cierres = [];     // historial
+
+let alumnoEditando = null;
+let tareaEditando = null;
+let eventoEditando = null;
+let alumnoViendo = null;
+let mesActual = new Date();
+let mesCal = new Date();
+let mesCobros = new Date();
+let filtroTareas = 'todos';
+let filtroCobros = 'todos';
+
+let alumnosTareaSeleccionados = [];
+let alumnosEventoSeleccionados = [];
+let fotoTemporal = null;
+let eventoNotasActual = null;
+
+/* ==========================================================
+   GUARDAR / CARGAR
+   ========================================================== */
+function guardarDatos() {
+    try {
+        localStorage.setItem("pa_alumnos", JSON.stringify(alumnos));
+        localStorage.setItem("pa_asistencias", JSON.stringify(asistencias));
+        localStorage.setItem("pa_tareas", JSON.stringify(tareas));
+        localStorage.setItem("pa_eventos", JSON.stringify(eventos));
+        localStorage.setItem("pa_cobros", JSON.stringify(cobros));
+        localStorage.setItem("pa_notas", JSON.stringify(notas));
+        localStorage.setItem("pa_cierres", JSON.stringify(cierres));
+    } catch (e) { console.warn("Error al guardar", e); }
+}
+
+function cargarDatos() {
+    try {
+        const a = localStorage.getItem("pa_alumnos"); if (a) alumnos = JSON.parse(a);
+        const as = localStorage.getItem("pa_asistencias"); if (as) asistencias = JSON.parse(as);
+        const t = localStorage.getItem("pa_tareas"); if (t) tareas = JSON.parse(t);
+        const e = localStorage.getItem("pa_eventos"); if (e) eventos = JSON.parse(e);
+        const c = localStorage.getItem("pa_cobros"); if (c) cobros = JSON.parse(c);
+        const n = localStorage.getItem("pa_notas"); if (n) notas = JSON.parse(n);
+        const ci = localStorage.getItem("pa_cierres"); if (ci) cierres = JSON.parse(ci);
+
+        // Modo oscuro guardado
+        if (localStorage.getItem("pa_modoOscuro") === "1") {
+            document.body.classList.add("modo-oscuro");
+            document.getElementById("btnModo").textContent = "☀️";
+        }
+    } catch (e) { console.warn("Error al cargar", e); }
+}
+
+/* ==========================================================
+   NAVEGACIÓN
+   ========================================================== */
+function irA(pantalla) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    const el = document.getElementById("screen-" + pantalla);
+    if (el) el.classList.add("active");
+
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+    const btn = document.querySelector('.nav-btn[data-screen="' + pantalla + '"]');
+    if (btn) btn.classList.add("active");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (pantalla === "inicio") actualizarResumenInicio();
+    if (pantalla === "alumnos") renderizarAlumnos();
+    if (pantalla === "asistencia") renderizarAsistencia();
+    if (pantalla === "tareas") renderizarTareas();
+    if (pantalla === "calendario") renderizarCalendario();
+    if (pantalla === "cobros") renderizarCobros();
+    if (pantalla === "cierre") renderizarCierre();
+    if (pantalla === "informes") renderizarInformes();
+}
+
+function cerrarModal(id) {
+    document.getElementById(id).classList.remove("show");
+}
+
+function toggleModoOscuro() {
+    document.body.classList.toggle("modo-oscuro");
+    const esOscuro = document.body.classList.contains("modo-oscuro");
+    document.getElementById("btnModo").textContent = esOscuro ? "☀️" : "🌙";
+    localStorage.setItem("pa_modoOscuro", esOscuro ? "1" : "0");
+}
+
+/* ==========================================================
+   SALUDO Y FECHA
+   ========================================================== */
+function actualizarSaludo() {
+    const hora = new Date().getHours();
+    let saludo = "Buenas noches";
+    if (hora >= 6 && hora < 12) saludo = "Buenos días";
+    else if (hora >= 12 && hora < 20) saludo = "Buenas tardes";
+    document.getElementById("greeting").textContent = saludo + ", Cristina";
+}
+
+function actualizarFecha() {
+    const dias = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    const hoy = new Date();
+    document.getElementById("fechaHoy").textContent =
+        dias[hoy.getDay()] + ", " + hoy.getDate() + " de " + meses[hoy.getMonth()];
+
+    const d = String(hoy.getDate()).padStart(2,"0");
+    const m = String(hoy.getMonth()+1).padStart(2,"0");
+    const y = hoy.getFullYear();
+    const elCierre = document.getElementById("fechaCierre");
+    if (elCierre) elCierre.textContent = "Cierre del " + d + "/" + m + "/" + y;
+}
+
+/* ==========================================================
+   UTILIDADES
+   ========================================================== */
+  function fechaISO(y, m, d) {
+    return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+}
+
+function esDiaCerrado(ds) { return ds === 0 || ds === 5 || ds === 6; }
+
+function escapeHtml(texto) {
+    if (texto === null || texto === undefined) return "";
+    return String(texto)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function iniciales(nombre) {
+    if (!nombre) return "?";
+    const partes = nombre.trim().split(/\s+/);
+    if (partes.length === 1) return partes[0].charAt(0).toUpperCase();
+    return (partes[0].charAt(0) + partes[1].charAt(0)).toUpperCase();
+}
+
+function turnoLabel(t) {
+    switch (String(t)) {
+        case "1": return "15:00–16:30";
+        case "2": return "16:30–18:00";
+        case "3": return "18:00–19:30";
+        case "4": return "19:30–21:00";
+        default:  return "Sin asignar";
+    }
+}
+
+function mesClave(fecha) {
+    return fecha.getFullYear() + "-" + String(fecha.getMonth()+1).padStart(2,"0");
+}
+
+/* ==========================================================
+   INICIO
+   ========================================================== */
+function actualizarResumenInicio() {
+    document.getElementById("cardAlumnos").textContent = alumnos.length;
+    document.getElementById("cardTareas").textContent = tareas.filter(t => t.estado !== "verde").length;
+
+    // Pendientes de pago del mes actual
+    const clave = mesClave(new Date());
+    let pendientes = 0;
+    alumnos.forEach(a => {
+        if (!a.tarifa) return;
+        const c = cobros[clave] && cobros[clave][a.id];
+        const total = Number(a.tarifa);
+        const pagado = c ? (c.importe || 0) : 0;
+        if (pagado < total) pendientes++;
+    });
+    document.getElementById("cardCobros").textContent = pendientes;
+
+    document.getElementById("cardAsistenciasHoy").textContent = contarAsistenciasHoy();
+
+    // Próximos eventos
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const proximos = eventos
+        .filter(ev => {
+            const f = new Date(ev.fecha + "T00:00:00");
+            const diff = Math.ceil((f - hoy) / (1000*60*60*24));
+            return diff >= 0 && diff <= 7;
+        })
+        .sort((a,b) => a.fecha.localeCompare(b.fecha));
+
+    const el = document.getElementById("proximosEventos");
+    if (!proximos.length) {
+        el.textContent = "Sin eventos próximos";
+    } else {
+        const primero = proximos[0];
+        const fecha = new Date(primero.fecha + "T00:00:00");
+        const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+        let cuando = "";
+        if (diff === 0) cuando = "Hoy";
+        else if (diff === 1) cuando = "Mañana";
+        else cuando = "En " + diff + " días";
+        el.textContent = cuando + ": " + primero.titulo + (proximos.length > 1 ? " (+" + (proximos.length - 1) + " más)" : "");
+    }
+}
+
+function contarAsistenciasHoy() {
+    const hoy = new Date();
+    const iso = fechaISO(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    let n = 0;
+    Object.keys(asistencias).forEach(id => {
+        if (asistencias[id] && asistencias[id][iso]) n++;
+    });
+    return n;
+}
+/* ==========================================================
+   ALUMNOS
+   ========================================================== */
+function renderizarAlumnos() {
+    const cont = document.getElementById("listaAlumnos");
+    const filtro = (document.getElementById("buscador").value || "").toLowerCase().trim();
+
+    let lista = alumnos.slice().sort((a,b) => a.nombre.localeCompare(b.nombre));
+    if (filtro) {
+        lista = lista.filter(a =>
+            a.nombre.toLowerCase().includes(filtro) ||
+            (a.curso||"").toLowerCase().includes(filtro) ||
+            (a.colegio||"").toLowerCase().includes(filtro) ||
+            (a.tutor||"").toLowerCase().includes(filtro)
+        );
+    }
+
+    document.getElementById("contadorAlumnos").textContent =
+        alumnos.length + (alumnos.length === 1 ? " alumno" : " alumnos");
+
+    if (!lista.length) {
+        cont.innerHTML = '<div class="vacio-msg"><span class="icon">👶</span><p>' +
+            (filtro ? "No hay alumnos que coincidan con la búsqueda." : "Todavía no tienes alumnos.<br>Toca <b>+ Añadir</b> para meter el primero.") +
+            '</p></div>';
+        return;
+    }
+
+    let html = "";
+    lista.forEach(a => {
+        const avatar = a.foto
+            ? '<div class="alumno-avatar"><img src="' + a.foto + '" alt=""></div>'
+            : '<div class="alumno-avatar">' + iniciales(a.nombre) + '</div>';
+        html += '<div class="alumno-card" onclick="verFicha(' + a.id + ')">' +
+            '<div class="alumno-info">' + avatar +
+                '<div class="alumno-texto">' +
+                    '<p class="alumno-nombre">' + escapeHtml(a.nombre) + '</p>' +
+                    '<p class="alumno-detalle">' +
+                        escapeHtml(a.curso || "Sin curso") +
+                        (a.colegio ? " · " + escapeHtml(a.colegio) : "") +
+                        (a.tarifa ? " · " + a.tarifa + " €" : "") +
+                    '</p>' +
+                '</div>' +
+            '</div>' +
+            '<div class="alumno-flecha">›</div>' +
+        '</div>';
+    });
+    cont.innerHTML = html;
+}
+
+function abrirFormularioAlumno() {
+    alumnoEditando = null;
+    fotoTemporal = null;
+    document.getElementById("modalTituloAlumno").textContent = "➕ Añadir alumno";
+    limpiarFormularioAlumno();
+    document.getElementById("modalAlumno").classList.add("show");
+}
+
+function editarAlumno(id) {
+    const a = alumnos.find(x => x.id === id);
+    if (!a) return;
+    alumnoEditando = id;
+    fotoTemporal = a.foto || null;
+    document.getElementById("modalTituloAlumno").textContent = "✏️ Editar alumno";
+    document.getElementById("fNombre").value = a.nombre || "";
+    document.getElementById("fCurso").value = a.curso || "";
+    document.getElementById("fEtapa").value = a.etapa || "";
+    document.getElementById("fColegio").value = a.colegio || "";
+    document.getElementById("fTutor").value = a.tutor || "";
+    document.getElementById("fTelefono").value = a.telefono || "";
+    document.getElementById("fEmail").value = a.email || "";
+    document.getElementById("fTurno").value = a.turno || "";
+    document.getElementById("fTarifa").value = a.tarifa || "";
+    document.getElementById("fNotas").value = a.notas || "";
+    actualizarPreviewFoto();
+    document.getElementById("modalAlumno").classList.add("show");
+}
+
+function limpiarFormularioAlumno() {
+    ["fNombre","fCurso","fEtapa","fColegio","fTutor","fTelefono","fEmail","fNotas"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+    document.getElementById("fTurno").value = "";
+    document.getElementById("fTarifa").value = "";
+    actualizarPreviewFoto();
+}
+
+function actualizarPreviewFoto() {
+    const prev = document.getElementById("fotoPreview");
+    if (fotoTemporal) {
+        prev.innerHTML = '<img src="' + fotoTemporal + '" alt="">';
+    } else {
+        prev.innerHTML = "👤";
+    }
+}
+
+function procesarFoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Redimensionar para no ocupar mucho
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement("canvas");
+            const maxSize = 300;
+            let w = img.width, h = img.height;
+            if (w > h) { if (w > maxSize) { h = h * maxSize / w; w = maxSize; } }
+            else { if (h > maxSize) { w = w * maxSize / h; h = maxSize; } }
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            fotoTemporal = canvas.toDataURL("image/jpeg", 0.8);
+            actualizarPreviewFoto();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+}
+
+function quitarFoto() {
+    fotoTemporal = null;
+    actualizarPreviewFoto();
+}
+
+function guardarAlumnoDesdeForm() {
+    const nombre = document.getElementById("fNombre").value.trim();
+    if (!nombre) { alert("El nombre es obligatorio."); return; }
+
+    const datos = {
+        nombre: nombre,
+        curso: document.getElementById("fCurso").value.trim(),
+        etapa: document.getElementById("fEtapa").value,
+        colegio: document.getElementById("fColegio").value.trim(),
+        tutor: document.getElementById("fTutor").value.trim(),
+        telefono: document.getElementById("fTelefono").value.trim(),
+        email: document.getElementById("fEmail").value.trim(),
+        turno: document.getElementById("fTurno").value,
+        tarifa: document.getElementById("fTarifa").value,
+        notas: document.getElementById("fNotas").value.trim(),
+        foto: fotoTemporal
+    };
+
+    if (alumnoEditando) {
+        const idx = alumnos.findIndex(x => x.id === alumnoEditando);
+        if (idx !== -1) { datos.id = alumnos[idx].id; alumnos[idx] = datos; }
+    } else {
+        datos.id = Date.now();
+        alumnos.push(datos);
+    }
+
+    guardarDatos();
+    cerrarModal("modalAlumno");
+    renderizarAlumnos();
+    actualizarResumenInicio();
+}
+
+function confirmarEliminar(id) {
+    const a = alumnos.find(x => x.id === id);
+    if (!a) return;
+    if (!confirm("¿Seguro que quieres eliminar a " + a.nombre + "?")) return;
+    alumnos = alumnos.filter(x => x.id !== id);
+    if (asistencias[id]) delete asistencias[id];
+    tareas.forEach(t => { if (t.alumnos) t.alumnos = t.alumnos.filter(aid => aid !== id); });
+    guardarDatos();
+    irA("alumnos");
+    renderizarAlumnos();
+    actualizarResumenInicio();
+}
+
+/* ==========================================================
+   FICHA DE ALUMNO
+   ========================================================== */
+function verFicha(id) {
+    const a = alumnos.find(x => x.id === id);
+    if (!a) return;
+    alumnoViendo = id;
+
+    const telLimpio = (a.telefono || "").replace(/\D/g, "");
+    const waLink = telLimpio ? "https://wa.me/" + telLimpio : "";
+    const telLink = telLimpio ? "tel:+" + telLimpio : "";
+
+    const avatar = a.foto
+        ? '<div class="ficha-avatar"><img src="' + a.foto + '" alt=""></div>'
+        : '<div class="ficha-avatar">' + iniciales(a.nombre) + '</div>';
+
+    // Notas de exámenes de este alumno
+    const susNotas = notas.filter(n => n.alumnoId === id);
+    let notasHtml = "";
+    if (susNotas.length) {
+        notasHtml = '<p class="ficha-seccion-titulo">Calificaciones</p><div class="ficha-grid">';
+        susNotas.forEach(n => {
+            const ev = eventos.find(e => e.id === n.eventoId);
+            const titulo = ev ? ev.titulo : "Examen";
+            notasHtml += '<div class="ficha-item"><p class="ficha-item-label">' + escapeHtml(titulo) + '</p><p class="ficha-item-valor">' + n.nota + ' / 10</p></div>';
+        });
+        notasHtml += '</div>';
+    }
+
+    // Tareas de este alumno
+    const susTareas = tareas.filter(t => t.alumnos && t.alumnos.includes(id));
+    let tareasHtml = "";
+    if (susTareas.length) {
+        tareasHtml = '<p class="ficha-seccion-titulo">Tareas</p>';
+        susTareas.slice(0,5).forEach(t => {
+            tareasHtml += '<div class="tarea-card estado-' + t.estado + '" style="margin-bottom:6px; cursor:default;">' +
+                '<div class="tarea-top"><p class="tarea-titulo">' + escapeHtml(t.titulo) + '</p>' +
+                '<span class="tarea-estado-punto punto-' + t.estado + '"></span></div>' +
+                (t.asignatura ? '<p class="tarea-info">📚 ' + escapeHtml(t.asignatura) + '</p>' : '') +
+            '</div>';
+        });
+        tareasHtml += '</div>';
+    }
+
+    let html = '<div class="ficha-card">' +
+        '<div class="ficha-cabecera">' + avatar +
+            '<div class="texto">' +
+                '<h2 class="ficha-nombre">' + escapeHtml(a.nombre) + '</h2>' +
+                '<p class="ficha-sub">' +
+                    escapeHtml(a.curso || "Sin curso") +
+                    (a.etapa ? " · " + escapeHtml(a.etapa) : "") +
+                    (a.colegio ? " · " + escapeHtml(a.colegio) : "") +
+                '</p>' +
+            '</div>' +
+        '</div>' +
+        '<div class="ficha-grid">' +
+            '<div class="ficha-item"><p class="ficha-item-label">Tarifa</p><p class="ficha-item-valor">' +
+                (a.tarifa ? a.tarifa + " €" : "—") + '</p></div>' +
+            '<div class="ficha-item"><p class="ficha-item-label">Turno</p><p class="ficha-item-valor">' +
+                turnoLabel(a.turno) + '</p></div>' +
+        '</div>' +
+        '<p class="ficha-seccion-titulo">Contacto</p>' +
+        '<div class="ficha-grid">' +
+            '<div class="ficha-item"><p class="ficha-item-label">Tutor/a</p><p class="ficha-item-valor">' +
+                escapeHtml(a.tutor || "—") + '</p></div>' +
+            '<div class="ficha-item"><p class="ficha-item-label">Teléfono</p><p class="ficha-item-valor">' +
+                escapeHtml(a.telefono || "—") + '</p></div>' +
+            '<div class="ficha-item" style="grid-column: 1 / -1;"><p class="ficha-item-label">Email</p><p class="ficha-item-valor">' +
+                escapeHtml(a.email || "—") + '</p></div>' +
+        '</div>';
+
+    if (a.notas) {
+        html += '<p class="ficha-seccion-titulo">Notas</p><div class="ficha-notas">' + escapeHtml(a.notas) + '</div>';
+    }
+
+    html += notasHtml + tareasHtml + '</div>';
+
+    if (telLimpio) {
+        html += '<div class="acciones-rapidas">' +
+            '<button class="btn-accion btn-whatsapp" onclick="window.open(\'' + waLink + '\', \'_blank\')">💬 WhatsApp</button>' +
+            '<button class="btn-accion btn-llamar" onclick="window.location.href=\'' + telLink + '\'">📞 Llamar</button>' +
+        '</div>';
+    } else {
+        html += '<div class="acciones-rapidas">' +
+            '<button class="btn-accion btn-whatsapp" style="opacity:.5;" onclick="alert(\'Sin teléfono guardado.\')">💬 WhatsApp</button>' +
+            '<button class="btn-accion btn-llamar" style="opacity:.5;" onclick="alert(\'Sin teléfono guardado.\')">📞 Llamar</button>' +
+        '</div>';
+    }
+
+    html += '<div class="ficha-botones-bottom">' +
+        '<button class="btn-editar" onclick="editarAlumno(' + a.id + ')">✏️ Editar</button>' +
+        '<button class="btn-eliminar" onclick="confirmarEliminar(' + a.id + ')">🗑 Eliminar</button>' +
+    '</div>';
+
+    document.getElementById("contenidoFicha").innerHTML = html;
+    irA("ficha");
+}
+
+/* ==========================================================
+   ASISTENCIA
+   ========================================================== */
+function cambiarMes(delta) {
+    mesActual = new Date(mesActual.getFullYear(), mesActual.getMonth() + delta, 1);
+    renderizarAsistencia();
+}
+
+function renderizarAsistencia() {
+    const year = mesActual.getFullYear();
+    const month = mesActual.getMonth();
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    document.getElementById("mesActual").textContent = meses[month] + " " + year;
+
+    const diasEnMes = new Date(year, month + 1, 0).getDate();
+    const hoy = new Date();
+    const esMesActual = hoy.getFullYear() === year && hoy.getMonth() === month;
+
+    let thead = '<tr><th class="sticky-nombre">Alumno</th>';
+    for (let d = 1; d <= diasEnMes; d++) {
+        const ds = new Date(year, month, d).getDay();
+        const clases = [];
+        if (esDiaCerrado(ds)) clases.push("dia-cerrado");
+        if (esMesActual && d === hoy.getDate()) clases.push("dia-hoy");
+        thead += '<th class="' + clases.join(" ") + '">' + d + '</th>';
+    }
+    thead += '</tr>';
+    document.getElementById("asistenciaHead").innerHTML = thead;
+
+    const tbody = document.getElementById("asistenciaBody");
+    if (!alumnos.length) {
+        tbody.innerHTML = '<tr><td colspan="' + (diasEnMes + 1) + '" style="text-align:center; padding:30px; font-weight:700; color:#64748b; font-size:14px;">Todavía no tienes alumnos.</td></tr>';
+        return;
+    }
+
+    const lista = alumnos.slice().sort((a,b) => a.nombre.localeCompare(b.nombre));
+    let html = "";
+    lista.forEach(a => {
+        html += '<tr><td class="sticky-nombre">' + escapeHtml(a.nombre) + '</td>';
+        for (let d = 1; d <= diasEnMes; d++) {
+            const ds = new Date(year, month, d).getDay();
+            const iso = fechaISO(year, month, d);
+            const marcado = asistencias[a.id] && asistencias[a.id][iso];
+            const clases = [];
+            if (esDiaCerrado(ds)) clases.push("dia-cerrado");
+            if (marcado) clases.push("marcado");
+            html += '<td class="' + clases.join(" ") + '" onclick="toggleAsistencia(' + a.id + ', \'' + iso + '\', this)">' + (marcado ? "✓" : "") + '</td>';
+        }
+        html += '</tr>';
+    });
+    tbody.innerHTML = html;
+}
+
+function toggleAsistencia(alumnoId, iso, celda) {
+    if (!asistencias[alumnoId]) asistencias[alumnoId] = {};
+    if (asistencias[alumnoId][iso]) {
+        delete asistencias[alumnoId][iso];
+        celda.classList.remove("marcado");
+        celda.textContent = "";
+    } else {
+        asistencias[alumnoId][iso] = true;
+        celda.classList.add("marcado");
+        celda.textContent = "✓";
+    }
+    guardarDatos();
+    actualizarResumenInicio();
+}
+
+/* ==========================================================
+   TAREAS
+   ========================================================== */
+function filtrarTareas(filtro, boton) {
+    filtroTareas = filtro;
+    document.querySelectorAll('[data-filtro]').forEach(b => b.classList.remove("active"));
+    if (boton) boton.classList.add("active");
+    renderizarTareas();
+}
+
+function renderizarTareas() {
+    const cont = document.getElementById("listaTareas");
+    let lista = tareas.slice().sort((a,b) => {
+        if (a.estado === "verde" && b.estado !== "verde") return 1;
+        if (a.estado !== "verde" && b.estado === "verde") return -1;
+        if (a.fechaLimite && b.fechaLimite) return a.fechaLimite.localeCompare(b.fechaLimite);
+        if (a.fechaLimite) return -1;
+        if (b.fechaLimite) return 1;
+        return (b.creada || 0) - (a.creada || 0);
+    });
+
+    if (filtroTareas !== "todos") {
+        lista = lista.filter(t => t.estado === filtroTareas);
+    }
+
+    document.getElementById("contadorTareas").textContent = tareas.filter(t => t.estado !== "verde").length + " pendientes";
+
+    if (!lista.length) {
+        cont.innerHTML = '<div class="vacio-msg"><span class="icon">📚</span><p>No hay tareas en este filtro.</p></div>';
+        return;
+    }
+
+    const nombresAsignada = { cristina: "👑 Cristina", lola: "👑 Lola", ambas: "👑 Ambas" };
+
+    let html = "";
+    lista.forEach(t => {
+        const alumnosTxt = (t.alumnos || []).map(aid => {
+            const a = alumnos.find(x => x.id === aid);
+            return a ? a.nombre : "?";
+        }).join(", ");
+
+        html += '<div class="tarea-card estado-' + t.estado + '" onclick="editarTarea(' + t.id + ')">' +
+            '<div class="tarea-top">' +
+                '<p class="tarea-titulo">' + escapeHtml(t.titulo) + '</p>' +
+                '<span class="tarea-estado-punto punto-' + t.estado + '"></span>' +
+            '</div>' +
+            (t.asignatura ? '<p class="tarea-info">📚 ' + escapeHtml(t.asignatura) + '</p>' : '') +
+            (alumnosTxt ? '<p class="tarea-info">👦 ' + escapeHtml(alumnosTxt) + '</p>' : '') +
+            '<div class="tarea-fechas">' +
+                (t.creada ? '<span>📅 Creada: ' + new Date(t.creada).toLocaleDateString("es-ES") + '</span>' : '') +
+                (t.fechaLimite ? '<span>⏰ Límite: ' + new Date(t.fechaLimite + "T00:00:00").toLocaleDateString("es-ES") + '</span>' : '') +
+                '<span>' + nombresAsignada[t.asignada || "cristina"] + '</span>' +
+            '</div>' +
+        '</div>';
+    });
+    cont.innerHTML = html;
+}
+
+function abrirFormularioTarea() {
+  tareaEditando = null;
+    alumnosTareaSeleccionados = [];
+    document.getElementById("modalTituloTarea").textContent = "➕ Añadir tarea";
+    document.getElementById("tTitulo").value = "";
+    document.getElementById("tAsignatura").value = "";
+    document.getElementById("tFechaLimite").value = "";
+    document.getElementById("tEstado").value = "rojo";
+    document.getElementById("tAsignada").value = "cristina";
+    document.getElementById("tNotas").value = "";
+    document.getElementById("tBuscadorAlumno").value = "";
+    renderizarSelectorAlumnosTarea();
+    actualizarChipsAlumnosTarea();
+    document.getElementById("modalTarea").classList.add("show");
+}
+
+function editarTarea(id) {
+    const t = tareas.find(x => x.id === id);
+    if (!t) return;
+    tareaEditando = id;
+    alumnosTareaSeleccionados = (t.alumnos || []).slice();
+    document.getElementById("modalTituloTarea").textContent = "✏️ Editar tarea";
+    document.getElementById("tTitulo").value = t.titulo || "";
+    document.getElementById("tAsignatura").value = t.asignatura || "";
+    document.getElementById("tFechaLimite").value = t.fechaLimite || "";
+    document.getElementById("tEstado").value = t.estado || "rojo";
+    document.getElementById("tAsignada").value = t.asignada || "cristina";
+    document.getElementById("tNotas").value = t.notas || "";
+    document.getElementById("tBuscadorAlumno").value = "";
+    renderizarSelectorAlumnosTarea();
+    actualizarChipsAlumnosTarea();
+    document.getElementById("modalTarea").classList.add("show");
+}
+
+function renderizarSelectorAlumnosTarea() {
+    const cont = document.getElementById("tListaAlumnos");
+    const filtro = (document.getElementById("tBuscadorAlumno").value || "").toLowerCase().trim();
+    let lista = alumnos.slice().sort((a,b) => a.nombre.localeCompare(b.nombre));
+    if (filtro) lista = lista.filter(a => a.nombre.toLowerCase().includes(filtro));
+
+    if (!lista.length) { cont.innerHTML = '<p style="text-align:center; color: var(--text-soft); font-size:13px; font-weight:700;">Sin alumnos</p>'; return; }
+
+    let html = "";
+    lista.forEach(a => {
+        const sel = alumnosTareaSeleccionados.includes(a.id);
+        html += '<label class="cierre-item"><input type="checkbox" ' + (sel ? "checked" : "") + ' onchange="toggleAlumnoTarea(' + a.id + ')"> ' + escapeHtml(a.nombre) + '</label>';
+    });
+    cont.innerHTML = html;
+}
+
+function toggleAlumnoTarea(id) {
+    const idx = alumnosTareaSeleccionados.indexOf(id);
+    if (idx === -1) alumnosTareaSeleccionados.push(id);
+    else alumnosTareaSeleccionados.splice(idx, 1);
+    actualizarChipsAlumnosTarea();
+}
+
+function actualizarChipsAlumnosTarea() {
+    const cont = document.getElementById("tAlumnosSeleccionados");
+    if (!alumnosTareaSeleccionados.length) { cont.innerHTML = ""; return; }
+    let html = "";
+    alumnosTareaSeleccionados.forEach(id => {
+        const a = alumnos.find(x => x.id === id);
+        if (a) html += '<span style="display:inline-block; background: var(--primary-bg); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; margin: 2px;">' + escapeHtml(a.nombre) + '</span>';
+    });
+    cont.innerHTML =html;
+}
+
+function guardarTareaDesdeForm() {
+    const titulo = document.getElementById("tTitulo").value.trim();
+    if (!titulo) { alert("El título es obligatorio."); return; }
+    if (!alumnosTareaSeleccionados.length) { alert("Selecciona al menos un alumno."); return; }
+
+    const datos = {
+        titulo: titulo,
+        asignatura: document.getElementById("tAsignatura").value.trim(),
+        alumnos: alumnosTareaSeleccionados.slice(),
+        fechaLimite: document.getElementById("tFechaLimite").value,
+        estado: document.getElementById("tEstado").value,
+        asignada: document.getElementById("tAsignada").value,
+        notas: document.getElementById("tNotas").value.trim(),
+        creada: tareaEditando ? tareas.find(t => t.id === tareaEditando).creada : Date.now()
+    };
+
+    if (tareaEditando) {
+        const idx = tareas.findIndex(t => t.id === tareaEditando);
+        if (idx !== -1) { datos.id = tareas[idx].id; tareas[idx] = datos; }
+    } else {
+        datos.id = Date.now();
+        tareas.push(datos);
+    }
+
+    guardarDatos();
+    cerrarModal("modalTarea");
+    renderizarTareas();
+    actualizarResumenInicio();
+}
+
+/* ==========================================================
+   CALENDARIO
+   ========================================================== */
+function cambiarMesCal(delta) {
+    mesCal = new Date(mesCal.getFullYear(), mesCal.getMonth() + delta, 1);
+    renderizarCalendario();
+}
+
+function renderizarCalendario() {
+    const year = mesCal.getFullYear();
+    const month = mesCal.getMonth();
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    document.getElementById("mesActualCal").textContent = meses[month] + " " + year;
+
+    const diasEnMes = new Date(year, month + 1, 0).getDate();
+    const primerDia = new Date(year, month, 1).getDay();
+    const offset = (primerDia === 0) ? 6 : primerDia - 1;
+    const hoy = new Date();
+
+    let html = "";
+    ["L","M","X","J","V","S","D"].forEach(d => {
+        html += '<div class="cal-dia-semana">' + d + '</div>';
+    });
+
+    for (let i = 0; i < offset; i++) html += '<div class="cal-dia vacio"></div>';
+
+    for (let d = 1; d <= diasEnMes; d++) {
+        const iso = fechaISO(year, month, d);
+        const esHoy = hoy.getFullYear() === year && hoy.getMonth() === month && hoy.getDate() === d;
+        const eventosDia = eventos.filter(e => e.fecha === iso);
+        const puntos = eventosDia.slice(0,3).map(e => '<span class="cal-punto punto-' + e.tipo + '"></span>').join("");
+        html += '<div class="cal-dia ' + (esHoy ? "hoy" : "") + '" onclick="verDiaCalendario(\'' + iso + '\')">' +
+            '<span class="numero">' + d + '</span>' +
+            (puntos ? '<div class="cal-puntos">' + puntos + '</div>' : '') +
+        '</div>';
+    }
+
+    document.getElementById("calendarioGrid").innerHTML = html;
+
+    const contEv = document.getElementById("listaEventosMes");
+    const eventosMes = eventos
+        .filter(e => {
+            const f = new Date(e.fecha + "T00:00:00");
+            return f.getFullYear() === year && f.getMonth() === month;
+        })
+        .sort((a,b) => a.fecha.localeCompare(b.fecha));
+
+    if (!eventosMes.length) {
+        contEv.innerHTML = '<div class="vacio-msg" style="padding: 20px;"><p style="font-size:13px;">No hay eventos este mes.</p></div>';
+        return;
+    }
+
+    const tipoIcono = { examen: "🔴", trabajo: "🟣", evento: "🔵", festivo: "🟢", recordatorio: "🟡" };
+    const mesesCortos = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
+
+    let htmlEv = "";
+    eventosMes.forEach(ev => {
+        const f = new Date(ev.fecha + "T00:00:00");
+        const alumnosTxt = (ev.alumnos || []).map(aid => {
+            const a = alumnos.find(x => x.id === aid);
+            return a ? a.nombre : "?";
+        }).join(", ");
+        htmlEv += '<div class="evento-card tipo-' + ev.tipo + '" onclick="editarEvento(' + ev.id + ')">' +
+            '<div class="fecha-bloque">' +
+                '<div class="dia">' + f.getDate() + '</div>' +
+                '<div class="mes">' + mesesCortos[f.getMonth()] + '</div>' +
+            '</div>' +
+            '<div class="info">' +
+                '<p class="titulo">' + tipoIcono[ev.tipo] + ' ' + escapeHtml(ev.titulo) + '</p>' +
+                '<p class="detalle">' +
+                    (ev.asignatura ? escapeHtml(ev.asignatura) : "") +
+                    (alumnosTxt ? " · " + escapeHtml(alumnosTxt) : "") +
+                '</p>' +
+            '</div>' +
+        '</div>';
+    });
+    contEv.innerHTML = htmlEv;
+}
+
+function verDiaCalendario(iso) {
+    const f = new Date(iso + "T00:00:00");
+    const evs = eventos.filter(e => e.fecha === iso);
+    alert("Día " + f.getDate() + "/" + (f.getMonth()+1) + "/" + f.getFullYear() + "\n\n" +
+        (evs.length ? evs.map(e => "• " + e.titulo).join("\n") : "Sin eventos"));
+}
+
+function abrirFormularioEvento() {
+    eventoEditando = null;
+    alumnosEventoSeleccionados = [];
+    document.getElementById("modalTituloEvento").textContent = "➕ Añadir evento";
+    document.getElementById("eTipo").value = "examen";
+    document.getElementById("eTitulo").value = "";
+    document.getElementById("eFecha").value = fechaISO(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    document.getElementById("eAsignatura").value = "";
+    document.getElementById("eAviso").value = "2";
+    document.getElementById("eNotas").value = "";
+    document.getElementById("eBuscadorAlumno").value = "";
+    renderizarSelectorAlumnosEvento();
+    actualizarChipsAlumnosEvento();
+    document.getElementById("modalEvento").classList.add("show");
+}
+
+function editarEvento(id) {
+    const ev = eventos.find(x => x.id === id);
+    if (!ev) return;
+    eventoEditando = id;
+    alumnosEventoSeleccionados = (ev.alumnos || []).slice();
+  document.getElementById("modalTituloEvento").textContent = "✏️ Editar evento";
+    document.getElementById("eTipo").value = ev.tipo || "examen";
+    document.getElementById("eTitulo").value = ev.titulo || "";
+    document.getElementById("eFecha").value = ev.fecha || "";
+    document.getElementById("eAsignatura").value = ev.asignatura || "";
+    document.getElementById("eAviso").value = ev.aviso !== undefined ? String(ev.aviso) : "2";
+    document.getElementById("eNotas").value = ev.notas || "";
+    document.getElementById("eBuscadorAlumno").value = "";
+    renderizarSelectorAlumnosEvento();
+    actualizarChipsAlumnosEvento();
+    document.getElementById("modalEvento").classList.add("show");
+}
+
+function renderizarSelectorAlumnosEvento() {
+    const cont = document.getElementById("eListaAlumnos");
+    const filtro = (document.getElementById("eBuscadorAlumno").value || "").toLowerCase().trim();
+    let lista = alumnos.slice().sort((a,b) => a.nombre.localeCompare(b.nombre));
+    if (filtro) lista = lista.filter(a => a.nombre.toLowerCase().includes(filtro));
+
+    if (!lista.length) { cont.innerHTML = '<p style="text-align:center; color: var(--text-soft); font-size:13px; font-weight:700;">Sin alumnos</p>'; return; }
+
+    let html = "";
+    lista.forEach(a => {
+        const sel = alumnosEventoSeleccionados.includes(a.id);
+        html += '<label class="cierre-item"><input type="checkbox" ' + (sel ? "checked" : "") + ' onchange="toggleAlumnoEvento(' + a.id + ')"> ' + escapeHtml(a.nombre) + '</label>';
+    });
+    cont.innerHTML = html;
+}
+
+function toggleAlumnoEvento(id) {
+    const idx = alumnosEventoSeleccionados.indexOf(id);
+    if (idx === -1) alumnosEventoSeleccionados.push(id);
+    else alumnosEventoSeleccionados.splice(idx, 1);
+    actualizarChipsAlumnosEvento();
+}
+
+function actualizarChipsAlumnosEvento() {
+    const cont = document.getElementById("eAlumnosSeleccionados");
+    if (!alumnosEventoSeleccionados.length) { cont.innerHTML = ""; return; }
+    let html = "";
+    alumnosEventoSeleccionados.forEach(id => {
+        const a = alumnos.find(x => x.id === id);
+        if (a) html += '<span style="display:inline-block; background: var(--primary-bg); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; margin: 2px;">' + escapeHtml(a.nombre) + '</span>';
+    });
+    cont.innerHTML = html;
+}
+
+function actualizarColorEvento() { }
+
+function guardarEventoDesdeForm() {
+    const titulo = document.getElementById("eTitulo").value.trim();
+    if (!titulo) { alert("El título es obligatorio."); return; }
+    const fecha = document.getElementById("eFecha").value;
+    if (!fecha) { alert("La fecha es obligatoria."); return; }
+
+    const datos = {
+        tipo: document.getElementById("eTipo").value,
+        titulo: titulo,
+        fecha: fecha,
+        asignatura: document.getElementById("eAsignatura").value.trim(),
+        alumnos: alumnosEventoSeleccionados.slice(),
+        aviso: Number(document.getElementById("eAviso").value),
+        notas: document.getElementById("eNotas").value.trim()
+    };
+
+    if (eventoEditando) {
+        const idx = eventos.findIndex(e => e.id === eventoEditando);
+        if (idx !== -1) { datos.id = eventos[idx].id; eventos[idx] = datos; }
+    } else {
+        datos.id = Date.now();
+        eventos.push(datos);
+    }
+
+    guardarDatos();
+    cerrarModal("modalEvento");
+    renderizarCalendario();
+    actualizarResumenInicio();
+}
+
+/* ==========================================================
+   COBROS
+   ========================================================== */
+function cambiarMesCobros(delta) {
+    mesCobros = new Date(mesCobros.getFullYear(), mesCobros.getMonth() + delta, 1);
+    renderizarCobros();
+}
+
+function filtrarCobros(filtro, boton) {
+    filtroCobros = filtro;
+    document.querySelectorAll('[data-filtro-cobros]').forEach(b => b.classList.remove("active"));
+    if (boton) boton.classList.add("active");
+    renderizarCobros();
+}
+
+function renderizarCobros() {
+    const year = mesCobros.getFullYear();
+    const month = mesCobros.getMonth();
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+                   "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    document.getElementById("mesActualCobros").textContent = meses[month] + " " + year;
+
+    const clave = year + "-" + String(month+1).padStart(2,"0");
+    const datosMes = cobros[clave] || {};
+
+    let totalEsperado = 0, totalCobrado = 0;
+    const items = [];
+
+    alumnos.filter(a => a.tarifa).forEach(a => {
+        const total = Number(a.tarifa);
+        const c = datosMes[a.id];
+        const pagado = c ? (c.importe || 0) : 0;
+        const estado = pagado >= total ? "pagado" : (pagado > 0 ? "parcial" : "pendiente");
+
+        totalEsperado += total;
+        totalCobrado += pagado;
+
+        items.push({ alumno: a, total, pagado, estado, datos: c || null });
+    });
+
+    const totalPendiente = totalEsperado - totalCobrado;
+    document.getElementById("cobroTotalCobrado").textContent = totalCobrado + " €";
+    document.getElementById("cobroTotalPendiente").textContent = totalPendiente + " €";
+
+    let lista = items;
+    if (filtroCobros === "pagados") lista = items.filter(i => i.estado === "pagado");
+    if (filtroCobros === "pendientes") lista = items.filter(i => i.estado !== "pagado");
+    lista.sort((a,b) => a.alumno.nombre.localeCompare(b.alumno.nombre));
+
+    const cont = document.getElementById("listaCobros");
+    if (!lista.length) {
+        cont.innerHTML = '<div class="vacio-msg"><span class="icon">💰</span><p>No hay cobros en este filtro.</p></div>';
+        return;
+    }
+
+    let html = "";
+    lista.forEach(it => {
+        let estadoTxt = "";
+        if (it.estado === "pagado") estadoTxt = '<span class="estado pagado">✅ Cobrado</span>';
+        else if (it.estado === "parcial") estadoTxt = '<span class="estado parcial-txt">⚠️ Parcial (' + it.pagado + "/" + it.total + ' €)</span>';
+        else estadoTxt = '<span class="estado pendiente-txt">⏳ Pendiente</span>';
+
+        html += '<div class="cobro-card ' + (it.estado === "parcial" ? "parcial" : (it.estado === "pendiente" ? "pendiente" : "")) + '" onclick="abrirCobro(' + it.alumno.id + ', \'' + clave + '\')">' +
+            '<div class="info">' +
+                '<p class="nombre">' + escapeHtml(it.alumno.nombre) + '</p>' +
+                '<p class="detalle">' + it.total + ' € · ' + (it.datos && it.datos.metodo ? it.datos.metodo : "sin método") + '</p>' +
+            '</div>' +
+            estadoTxt +
+        '</div>';
+    });
+    cont.innerHTML = html;
+}
+
+function abrirCobro(alumnoId, clave) {
+    const a = alumnos.find(x => x.id === alumnoId);
+    if (!a) return;
+    const total = Number(a.tarifa) || 0;
+    const c = (cobros[clave] && cobros[clave][alumnoId]) || {};
+
+    const pagoActual = c.importe || 0;
+    const respuesta = prompt(
+        "💰 Cobro de " + a.nombre + "\n\n" +
+        "Importe total: " + total + " €\n" +
+        "Ya pagado: " + pagoActual + " €\n\n" +
+        "Introduce el importe pagado (deja vacío para no cambiar):",
+        pagoActual || total
+    );
+
+    if (respuesta === null) return;
+    const importe = Number(respuesta);
+    if (isNaN(importe) || importe < 0) { alert("Importe no válido."); return; }
+
+    let metodo = c.metodo || "";
+    const m = prompt("Método de pago:\n1 = Efectivo\n2 = Bizum\n3 = Transferencia\n\nDeja vacío para mantener: " + (metodo || "ninguno"), metodo === "Efectivo" ? "1" : metodo === "Bizum" ? "2" : metodo === "Transferencia" ? "3" : "");
+  if (m === "1") metodo = "Efectivo";
+    else if (m === "2") metodo = "Bizum";
+    else if (m === "3") metodo = "Transferencia";
+
+    if (!cobros[clave]) cobros[clave] = {};
+    cobros[clave][alumnoId] = {
+        importe: importe,
+        metodo: metodo,
+        fechaPago: c.fechaPago || new Date().toISOString().slice(0,10)
+    };
+
+    guardarDatos();
+    renderizarCobros();
+    actualizarResumenInicio();
+}
+
+/* ==========================================================
+   CIERRE DEL DÍA
+   ========================================================== */
+function renderizarCierre() {
+    const hoy = new Date();
+    const iso = fechaISO(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+    const contLista = document.getElementById("cierreLista");
+    if (!alumnos.length) {
+        contLista.innerHTML = '<p style="font-size:13px; color: var(--text-soft); font-weight:700; text-align:center; padding: 10px;">Sin alumnos.</p>';
+    } else {
+        let html = "";
+        alumnos.slice().sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(a => {
+            const marcado = asistencias[a.id] && asistencias[a.id][iso];
+            html += '<label class="cierre-item"><input type="checkbox" ' + (marcado ? "checked" : "") + ' onchange="toggleAsistenciaCierre(' + a.id + ', \'' + iso + '\', this)"> ' + escapeHtml(a.nombre) + '</label>';
+        });
+        contLista.innerHTML = html;
+    }
+
+    const contTar = document.getElementById("cierreTareas");
+    const pendientes = tareas.filter(t => t.estado !== "verde");
+    if (!pendientes.length) {
+        contTar.innerHTML = '<p style="font-size:13px; color: var(--text-soft); font-weight:700; text-align:center; padding: 10px;">Sin tareas pendientes 🎉</p>';
+    } else {
+        let html = "";
+        pendientes.slice(0, 20).forEach(t => {
+            html += '<div class="cierre-item"><span class="tarea-estado-punto punto-' + t.estado + '"></span>' + escapeHtml(t.titulo) + (t.asignatura ? " · " + escapeHtml(t.asignatura) : "") + '</div>';
+        });
+        contTar.innerHTML = html;
+    }
+
+    const contCob = document.getElementById("cierreCobros");
+    const clave = mesClave(hoy);
+    const datosMes = cobros[clave] || {};
+    const pendientesPago = alumnos.filter(a => a.tarifa && (datosMes[a.id] ? (datosMes[a.id].importe || 0) : 0) < Number(a.tarifa));
+    if (!pendientesPago.length) {
+        contCob.innerHTML = '<p style="font-size:13px; color: var(--text-soft); font-weight:700; text-align:center; padding: 10px;">Todos al día 🎉</p>';
+    } else {
+        let html = "";
+        pendientesPago.forEach(a => {
+            html += '<div class="cierre-item">💰 ' + escapeHtml(a.nombre) + ' · ' + a.tarifa + ' €</div>';
+        });
+        contCob.innerHTML = html;
+    }
+
+    const contHist = document.getElementById("historialCierres");
+    if (!cierres.length) {
+        contHist.innerHTML = '<p style="font-size:13px; color: var(--text-soft); font-weight:700; text-align:center; padding: 10px;">Sin cierres guardados todavía.</p>';
+    } else {
+        let html = "";
+        cierres.slice().reverse().slice(0, 10).forEach(c => {
+            html += '<div class="cierre-item" style="justify-content: space-between;">📋 ' + c.fecha + ' · ' + c.asistencias + ' asistencias · ' + c.tareasPend + ' tareas · ' + c.pendientesPago + ' pagos</div>';
+        });
+        contHist.innerHTML = html;
+    }
+}
+
+function toggleAsistenciaCierre(alumnoId, iso, checkbox) {
+    if (!asistencias[alumnoId]) asistencias[alumnoId] = {};
+    if (checkbox.checked) asistencias[alumnoId][iso] = true;
+    else delete asistencias[alumnoId][iso];
+    guardarDatos();
+    actualizarResumenInicio();
+}
+
+function cerrarDia() {
+    const hoy = new Date();
+    const iso = fechaISO(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+    let asistenciasHoy = 0;
+    Object.keys(asistencias).forEach(id => { if (asistencias[id][iso]) asistenciasHoy++; });
+    const tareasPend = tareas.filter(t => t.estado !== "verde").length;
+    const clave = mesClave(hoy);
+    const datosMes = cobros[clave] || {};
+    const pendientesPago = alumnos.filter(a => a.tarifa && (datosMes[a.id] ? (datosMes[a.id].importe || 0) : 0) < Number(a.tarifa)).length;
+
+    cierres.push({
+        fecha: iso,
+        asistencias: asistenciasHoy,
+        tareasPend: tareasPend,
+        pendientesPago: pendientesPago,
+        forzado: false
+    });
+
+    guardarDatos();
+    renderizarCierre();
+    alert("✅ Día cerrado.\n\n" +
+        "Asistencias: " + asistenciasHoy + "\n" +
+        "Tareas pendientes: " + tareasPend + "\n" +
+        "Pagos pendientes: " + pendientesPago);
+}
+
+function forzarCierre() {
+    if (!confirm("¿Cerrar el día sin revisar todo?")) return;
+    const hoy = new Date();
+    const iso = fechaISO(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    cierres.push({ fecha: iso, asistencias: 0, tareasPend: 0, pendientesPago: 0, forzado: true });
+    guardarDatos();
+    renderizarCierre();
+    alert("Día cerrado (forzado).");
+}
+
+/* ==========================================================
+   INFORMES
+   ========================================================== */
+function renderizarInformes() {
+    const clave = mesClave(new Date());
+    const datosMes = cobros[clave] || {};
+    let esperado = 0, cobrado = 0;
+    alumnos.filter(a => a.tarifa).forEach(a => {
+        const total = Number(a.tarifa);
+        esperado += total;
+        cobrado += datosMes[a.id] ? (datosMes[a.id].importe || 0) : 0;
+    });
+    const pendiente = esperado - cobrado;
+    const pct = esperado ? Math.round((cobrado / esperado) * 100) : 0;
+
+    document.getElementById("informeEsperado").textContent = esperado + " €";
+    document.getElementById("informeCobrado").textContent = cobrado + " €";
+    document.getElementById("informePendiente").textContent = pendiente + " €";
+    document.getElementById("informeBarra").style.width = pct + "%";
+
+    document.getElementById("informeTotalAlumnos").textContent = alumnos.length;
+    document.getElementById("informeTarifa60").textContent = alumnos.filter(a => a.tarifa === "60").length;
+    document.getElementById("informeTarifa35").textContent = alumnos.filter(a => a.tarifa === "35").length;
+    document.getElementById("informeTarifa38").textContent = alumnos.filter(a => a.tarifa === "38").length;
+
+    const hoy = new Date();
+    const y = hoy.getFullYear(), m = hoy.getMonth();
+    const diasEnMes = new Date(y, m+1, 0).getDate();
+    let totalMarcas = 0;
+    const faltasPorAlumno = {};
+    alumnos.forEach(a => {
+        let contador =0;
+        for (let d = 1; d <= diasEnMes; d++) {
+            const iso = fechaISO(y, m, d);
+            if (asistencias[a.id] && asistencias[a.id][iso]) contador++;
+        }
+        totalMarcas += contador;
+        faltasPorAlumno[a.id] = contador;
+    });
+    const media = alumnos.length ? Math.round(totalMarcas / alumnos.length) : 0;
+    document.getElementById("informeAsistenciaMedia").textContent = media + " clases/alumno";
+
+    let peor = null, min = Infinity;
+    alumnos.forEach(a => {
+        if (faltasPorAlumno[a.id] < min) { min = faltasPorAlumno[a.id]; peor = a; }
+    });
+    document.getElementById("informeMasFaltas").textContent = peor ? peor.nombre + " (" + min + ")" : "—";
+
+    const cont = document.getElementById("informeNotas");
+    const notasPorAlumno = {};
+    notas.forEach(n => {
+        if (!notasPorAlumno[n.alumnoId]) notasPorAlumno[n.alumnoId] = [];
+        notasPorAlumno[n.alumnoId].push(n.nota);
+    });
+    const conNotas = Object.keys(notasPorAlumno);
+    if (!conNotas.length) {
+        cont.innerHTML = '<p style="font-size:13px; color: var(--text-soft); font-weight:700; text-align:center;">Sin notas registradas todavía.</p>';
+    } else {
+        let html = "";
+        conNotas.forEach(id => {
+            const a = alumnos.find(x => x.id === Number(id));
+            if (!a) return;
+            const ns = notasPorAlumno[id];
+            const media = (ns.reduce((x,y) => x+y, 0) / ns.length).toFixed(1);
+            html += '<div class="informe-fila"><span class="n">' + escapeHtml(a.nombre) + '</span><span class="v">' + media + ' / 10 (' + ns.length + ')</span></div>';
+        });
+        cont.innerHTML = html;
+    }
+}
+
+function exportarInformePDF() {
+    alert("Para exportar a PDF:\n\n1. Toca los 3 puntitos de Chrome\n2. Elige 'Compartir' o 'Imprimir'\n3. Selecciona 'Guardar como PDF'\n\n¡Listo!");
+}
+
+/* ==========================================================
+   ARRANQUE
+   ========================================================== */
+cargarDatos();
+actualizarSaludo();
+actualizarFecha();
+actualizarResumenInicio();
+renderizarAlumnos();
+renderizarTareas();
+renderizarCalendario();
+renderizarCobros();
+
+</script>
+
+</body>
+</html>
