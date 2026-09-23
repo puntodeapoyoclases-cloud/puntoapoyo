@@ -1,0 +1,24 @@
+{
+  "name": "Punto de Apoyo",
+  "short_name": "Punto Apoyo",
+  "description": "Agenda de clases particulares",
+  "start_url": "/puntoapoyo/",
+  "display": "standalone",
+  "background_color": "#14b8a6",
+  "theme_color": "#14b8a6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}p
